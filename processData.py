@@ -7,13 +7,26 @@ import sys
 def main(args):
 
     with open ("test.txt") as data_file:
-        line_number = 0;
+        is_bei = False;
         sentence = [[]]
         for line in data_file:
-            line_number += 1
             token = line.split("\t")
-            if len(token) == 1:
+            if len(token) > 1:
+                #print(token[1])
+                token[1] = token[1].decode("utf-8")
+                #print(token[1])
+            if u'\u88ab' in token:
+                is_bei = True
+
+
+            if len(token) == 1 and is_bei == True:
+                print("It's Bei!")
                 sentence = [[]]
+                is_bei = False 
+            elif len(token) == 1 and is_bei == False:
+                print("Not a BEI")
+                sentence = [[]]
+                is_bei = False
             else:
                 sentence.append(token)
 
@@ -21,16 +34,9 @@ def main(args):
 
     for token in sentence:
         if len(token) > 1:
-            print(token[1].decode("utf-8"))
+            print(token[1])
 
 
-    ##if len(token) > 1:
-    ##  token[1] = token[1].decode("utf-8")
-    ##if u'\u88ab' in token:
-    ##    print("It's a bei sentence!")
-
-
-    ##print(line_number)
 
 
 main(sys.argv)
