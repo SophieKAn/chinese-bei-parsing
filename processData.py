@@ -63,7 +63,7 @@ def main():
 	for line in file:
 	    positive.append(line)
 
-    print(positive.decode("utf-8"))
+    print(positive)
 
 
 
