@@ -40,6 +40,13 @@ def main():
     print("{} instances of the bei passive marker.".format(bei_count))
 
     long_passives = findLongs(bei_sentences)
+    file = open("testing.txt","w")
+    for sentence in long_passives:
+        for token in sentence:
+            file.write(HanziConv.toSimplified(token[1]))
+            file.write("\n")
+    file.close()
+
     short_passives = findShorts(bei_sentences)
 
 
@@ -51,26 +58,25 @@ def main():
 
     with open("Data/Sentiment/negative_comment.txt") as file:
         for line in file:
-            negative.append(line)
+            negative.append(line.rstrip())
     with open("Data/Sentiment/negative_emotion.txt") as file:
         for line in file:
-            negative.append(line)
+            negative.append(line.rstrip())
     with open("Data/Sentiment/positive_comment.txt") as file:
         for line in file:
-            positive.append(line)
+            positive.append(line.rstrip())
     with open("Data/Sentiment/positive_emotion.txt") as file:
         for line in file:
-            positive.append(line)
+            positive.append(line.rstrip())
     with open("Data/NTUSD_simplified/NTUSD_negative_simplified.utf8.txt") as file:
         for line in file:
-            negative.append(line)
+            negative.append(line.rstrip())
     with open("Data/NTUSD_simplified/NTUSD_positive_simplified.utf8.txt") as file:
         for line in file:
-            negative.append(line)
+            positive.append(line.rstrip())
 
 
-
-    getScore(long_passives)
+    getScore(short_passives)
 
 
 
@@ -109,14 +115,29 @@ def averageDistance(sentences):
     return summ/count
 
 def getScore(sentences):
+    scores = []
     print("{} total sentences".format(len(sentences)))
     for sentence in sentences:
+        score = 0;
         for token in sentence:
             simp_token = HanziConv.toSimplified(token[1])
-            print(trad_token)
             if simp_token in negative:
-                print("neg")
+                score += 1
             if simp_token in positive:
-                print("pos")
+                score -=1
+        print("This sentence scored a {}".format(score))
+        scores.append(score)
+
+    print(sum(scores)/len(scores))
+    
+
+
+
+
+
+
+
+
+
 
 main()
