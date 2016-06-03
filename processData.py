@@ -21,7 +21,7 @@ def main():
             token_count += 1
             token = line.split("\t")
             if len(token) > 1:
-                token[1] = token[1]#.decode("utf-8")
+                token[1] = token[1]
             if u'\u88ab' in token:
                 is_bei = True
                 bei_count += 1
@@ -76,7 +76,8 @@ def main():
             positive.append(line.rstrip())
 
 
-    getScore(short_passives)
+    findStats("short", short_passives)
+    findStats("long", long_passives)
 
 
 
@@ -125,16 +126,32 @@ def getScore(sentences):
                 score += 1
             if simp_token in positive:
                 score -=1
-        print("This sentence scored a {}".format(score))
+        
         scores.append(score)
 
-    print(sum(scores)/len(scores))
+    return scores
     
 
+def findStats(structure, sentences):
+    print("Stats for {} passive sentences:".format(structure))
+    scores = getScore(sentences)
+    
+    pos_count = 0;
+    neg_count = 0;
+    neu_count = 0;
 
 
+    for score in scores:
+        if score > 0:
+            pos_count += 1
+        if score < 0:
+            neg_count += 1
+        if score == 0:
+            neu_count += 1
 
-
+    print("{} positive sentences.".format(pos_count))
+    print("{} negative sentences.".format(neg_count))
+    print("{} neutral sentences.".format(neu_count))
 
 
 
