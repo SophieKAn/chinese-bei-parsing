@@ -2,7 +2,10 @@
 
 import os
 import sys
+from hanziconv import HanziConv
 
+positive = []
+negative = []
 
 def main():
 
@@ -11,14 +14,14 @@ def main():
     bei_count = 0
 
 
-    with open ("zh-ud-train.conllu") as data_file:
+    with open ("Data/UD_Chinese/zh-ud-train.conllu") as data_file:
         is_bei = False;
         sentence = []
         for line in data_file:
             token_count += 1
             token = line.split("\t")
             if len(token) > 1:
-                token[1] = token[1].decode("utf-8")
+                token[1] = token[1]#.decode("utf-8")
             if u'\u88ab' in token:
                 is_bei = True
                 bei_count += 1
@@ -45,25 +48,29 @@ def main():
 
 
     ##Lets get these dictionaries!
-    positive = []
-    negative = []
 
-    with open("Sentiment/negative_comment.txt") as file:
+    with open("Data/Sentiment/negative_comment.txt") as file:
         for line in file:
-	    negative.append(line)
+            negative.append(line)
+    with open("Data/Sentiment/negative_emotion.txt") as file:
+        for line in file:
+            negative.append(line)
+    with open("Data/Sentiment/positive_comment.txt") as file:
+        for line in file:
+            positive.append(line)
+    with open("Data/Sentiment/positive_emotion.txt") as file:
+        for line in file:
+            positive.append(line)
+    with open("Data/NTUSD_simplified/NTUSD_negative_simplified.utf8.txt") as file:
+        for line in file:
+            negative.append(line)
+    with open("Data/NTUSD_simplified/NTUSD_positive_simplified.utf8.txt") as file:
+        for line in file:
+            negative.append(line)
 
-    with open("Sentiment/negative_emotion.txt") as file:
-	for line in file:
-	    negative.append(line)
 
-    with open("Sentiment/positive_comment.txt") as file:
-	for line in file:
-	    positive.append(line)
-    with open("Sentiment/positive_emotion.txt") as file:
-	for line in file:
-	    positive.append(line)
 
-    print(positive)
+    getScore(long_passives)
 
 
 
@@ -101,5 +108,15 @@ def averageDistance(sentences):
                 summ += int(token[6])
     return summ/count
 
+def getScore(sentences):
+    print("{} total sentences".format(len(sentences)))
+    for sentence in sentences:
+        for token in sentence:
+            simp_token = HanziConv.toSimplified(token[1])
+            print(trad_token)
+            if simp_token in negative:
+                print("neg")
+            if simp_token in positive:
+                print("pos")
 
 main()
