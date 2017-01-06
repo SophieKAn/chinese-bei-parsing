@@ -2,10 +2,10 @@
 
 import os
 import sys
-from hanziconv import HanziConv
+from hanziconv import HanziConv # Converting between traditional and simplified characters
 
-positive = []
-negative = []
+positive = [] # 'bei's with positive usage
+negative = [] # 'bei's with negative usage
 
 def main():
 
