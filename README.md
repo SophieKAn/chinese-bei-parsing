@@ -2,13 +2,11 @@
 
 This program was writtin in conjuction with a research paper about topics in Chinese linguistics. The research paper will not be published here but I will summarize some context and provide some information about what the program is doing.
 
-The research program in question answering the question:
-
 ### Context
 
 The research question we were attempting to answer is the following:
 
-##### "How does the function of the _bei_(被) construction very between short and long passives?""
+##### "How does the function of the _bei_(被) construction very between short and long passives?"
 
 In Mandarin Chinese, the word _bei_(被) acts as a passive marker, indicating that a "patient" has suffered an action at the hands of an "agent".
 
@@ -20,4 +18,6 @@ A short passive does not specify an agent:
 
 	<patient> + 被 + <verb> (+ <complement>)
 
-We wanted to write a program to analyze a **corpus** in order to recognize patterns of usage with both of these forms of _bei_(被)
+### What this Program Does
+
+We wanted to write a program to analyze a corpus in order to recognize patterns of usage with both of these forms of _bei_(被).
