@@ -2,23 +2,35 @@
 
 import os
 import sys
-from hanziconv import HanziConv # Converting between traditional and simplified characters
+from hanziconv import HanziConv
+from snownlp import SnowNLP
 
-positive = [] # 'bei's with positive usage
-negative = [] # 'bei's with negative usage
-
+## Main ##
 def main():
+    corpus = "data/UD_Chinese/zh-ud-train.conllu"
 
+    ### Find bei sentences ###
+    bei_sentences, bei_count = find_bei_sentences(corpus)
+    print("{} bei sentences.".format(bei_count))
+
+    ### Find short/long passives ###
+    long_passives = detokenize(findLongs(bei_sentences))
+    short_passives = detokenize(findShorts(bei_sentences))
+
+    ### Sentiment Analysis ###
+    s = SnowNLP(long_passives[0])
+    print(s.sentiments)
+
+
+
+## Functions ##
+def find_bei_sentences(corpus):
     bei_sentences = []
-    token_count = 0
     bei_count = 0
-
-
-    with open ("Data/UD_Chinese/zh-ud-train.conllu") as data_file:
+    with open (corpus) as data_file:
         is_bei = False;
         sentence = []
-        for line in data_file:
-            token_count += 1
+        for line in data_file:   
             token = line.split("\t")
             if len(token) > 1:
                 token[1] = token[1]
@@ -35,50 +47,7 @@ def main():
                 is_bei = False
             else:
                 sentence.append(token)
-
-    print("{} total tokens.".format(token_count))
-    print("{} instances of the bei passive marker.".format(bei_count))
-
-    long_passives = findLongs(bei_sentences)
-    file = open("testing.txt","w")
-    for sentence in long_passives:
-        for token in sentence:
-            file.write(HanziConv.toSimplified(token[1]))
-            file.write("\n")
-    file.close()
-
-    short_passives = findShorts(bei_sentences)
-
-
-    print("Average distance from head for short sentences is {}".format(averageDistance(short_passives)))
-    print("Average distance from head for long sentences is {}".format(averageDistance(long_passives)))
-
-
-    ##Lets get these dictionaries!
-
-    with open("Data/Sentiment/negative_comment.txt") as file:
-        for line in file:
-            negative.append(line.rstrip())
-    with open("Data/Sentiment/negative_emotion.txt") as file:
-        for line in file:
-            negative.append(line.rstrip())
-    with open("Data/Sentiment/positive_comment.txt") as file:
-        for line in file:
-            positive.append(line.rstrip())
-    with open("Data/Sentiment/positive_emotion.txt") as file:
-        for line in file:
-            positive.append(line.rstrip())
-    with open("Data/NTUSD_simplified/NTUSD_negative_simplified.utf8.txt") as file:
-        for line in file:
-            negative.append(line.rstrip())
-    with open("Data/NTUSD_simplified/NTUSD_positive_simplified.utf8.txt") as file:
-        for line in file:
-            positive.append(line.rstrip())
-
-
-    findStats("short", short_passives)
-    findStats("long", long_passives)
-
+    return bei_sentences, bei_count
 
 
 def findLongs(bei_sentences):
@@ -89,7 +58,7 @@ def findLongs(bei_sentences):
                 if sentence[token+1][3] != 'VERB':
                     longs.append(sentence)
 
-    print("{} instances of long passive sentences.".format(len(longs)))
+    print("{} long passives.".format(len(longs)))
     return longs
 
 def findShorts(bei_sentences):
@@ -100,61 +69,17 @@ def findShorts(bei_sentences):
                 if sentence[token+1][3] == 'VERB':
                     shorts.append(sentence)
 
-    print("{} instances of short passive sentences.".format(len(shorts)))
+    print("{} short passives.".format(len(shorts)))
     return shorts
 
-
-def averageDistance(sentences):
-    summ = 0
-    count = 0
-
-    for sentence in sentences:
+def detokenize(set_of_passives):
+    sentence_strings = []
+    for sentence in set_of_passives:
+        sentence_chars = []
         for token in sentence:
-            if u'\u88ab' in token:
-                count += 1
-                summ += int(token[6])
-    return summ/count
-
-def getScore(sentences):
-    scores = []
-    print("{} total sentences".format(len(sentences)))
-    for sentence in sentences:
-        score = 0;
-        for token in sentence:
-            simp_token = HanziConv.toSimplified(token[1])
-            if simp_token in negative:
-                score += 1
-            if simp_token in positive:
-                score -=1
-        
-        scores.append(score)
-
-    return scores
-    
-
-def findStats(structure, sentences):
-    print("Stats for {} passive sentences:".format(structure))
-    scores = getScore(sentences)
-    
-    pos_count = 0;
-    neg_count = 0;
-    neu_count = 0;
-
-
-    for score in scores:
-        if score > 0:
-            pos_count += 1
-        if score < 0:
-            neg_count += 1
-        if score == 0:
-            neu_count += 1
-
-    print("{} positive sentences.".format(pos_count))
-    print("{} negative sentences.".format(neg_count))
-    print("{} neutral sentences.".format(neu_count))
-
-
-
-
+            sentence_chars.append(token[1])
+        sentence_strings.append(''.join(sentence_chars))
+    return sentence_strings
 
 main()
+
