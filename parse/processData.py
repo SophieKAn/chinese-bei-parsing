@@ -1,5 +1,3 @@
-## Sophia Anderson | ander569@wwu.edu | 28 March 2016
-
 import os
 import sys
 from hanziconv import HanziConv
